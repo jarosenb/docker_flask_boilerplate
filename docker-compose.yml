@@ -1,0 +1,38 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: "Dockerfile.web"
+    ports:
+     - "5000:5000"
+    volumes:
+      - .:/opt/webapp
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432
+      - PORT=5000
+
+    depends_on:
+      - db
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: "Dockerfile.worker"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432
+      - PORT=5000
+    volumes:
+      - .:/opt/webapp
+    depends_on:
+      - web
+
+  db:
+    image: "postgres:alpine"
+
+
+  redis:
+    image: "redis:alpine"

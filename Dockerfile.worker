@@ -1,0 +1,9 @@
+FROM jarosenb/uvposit
+
+ADD . /opt/webapp/
+WORKDIR /opt/webapp
+
+RUN adduser -D myuser
+USER myuser
+
+CMD celery worker -A wsgi.celery
